@@ -18,9 +18,9 @@ $packageArgs = @{
   softwareName  = 'cubepdf*'
 
   # Checksums are calculated with the binaries downloaded from the official website, not the GitHub repository
-  checksum      = ''
+  checksum      = '65ec62de665c6d00724c2986435f244464feaea220d39bd540a88a25ca1263eb'
   checksumType  = 'sha256'
-  checksum64    = ''
+  checksum64    = '8b1ebc700ce5be332eb2932403efbe741d31c5948f8cafed78531c607d8348f7'
   checksumType64= 'sha256'
 
   silentArgs   = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-'
