@@ -44,7 +44,7 @@ jobs:
       - uses: EndBug/add-and-commit@v9
         if: ${{ success() && steps.build-package.outputs.UPDATED == 'True' }}
         with:
-          message: "[recurrent-package-update] Update CubePDF to ${{ steps.build-package.outputs.VERSION }}"
+          message: "[recurrent-package-update] Update CubePDF to ${{ steps.build-package.outputs.NEW_VERSION }}"
           add: "."
           cwd: "."
       - name: Push package to Chocolatey
@@ -58,4 +58,4 @@ jobs:
         if: ${{ success() && steps.build-package.outputs.UPDATED == 'True' }}
         run: |
           echo "## CubePDF Package Build Status for $(Get-Date -Format "yyyy-MM-dd")" >> $env:GITHUB_STEP_SUMMARY
-          echo "**Package updated to ${{ steps.build-package.outputs.VERSION }}** and pushed to chocolatey." >> $env:GITHUB_STEP_SUMMARY
+          echo "**Package updated to ${{ steps.build-package.outputs.NEW_VERSION }}** and pushed to chocolatey." >> $env:GITHUB_STEP_SUMMARY
