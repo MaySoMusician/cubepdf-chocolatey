@@ -42,18 +42,20 @@ jobs:
         working-directory: ./cubepdf
         run: Test-Package $Install
       - uses: EndBug/add-and-commit@v9
+        if: ${{ success() && steps.build-package.outputs.UPDATED == 'True' }}
         with:
           message: "[recurrent-package-update] Update CubePDF to ${{ steps.build-package.outputs.VERSION }}"
           add: "."
           cwd: "."
       - name: Push package to Chocolatey
+        if: ${{ success() && steps.build-package.outputs.UPDATED == 'True' }}
         run: Push-Package
         working-directory: ./cubepdf
         env:
           api_key: ${{ secrets.CHOCOLATEY_API_KEY }}
           au_Push: "true"
       - name: Output results
-        if: ${{ success() && steps.build-package.outputs.UPDATED != 'True' }}
+        if: ${{ success() && steps.build-package.outputs.UPDATED == 'True' }}
         run: |
           echo "## CubePDF Package Build Status for $(Get-Date -Format "yyyy-MM-dd")" >> $env:GITHUB_STEP_SUMMARY
           echo "**Package updated to ${{ steps.build-package.outputs.VERSION }}** and pushed to chocolatey." >> $env:GITHUB_STEP_SUMMARY
