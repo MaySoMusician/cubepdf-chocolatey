@@ -22,7 +22,12 @@ function New-GitHubHeaders {
 function Get-VersionFromCsprojText {
     param([Parameter(Mandatory = $true)][string]$CsprojText)
 
-    try { [xml]$xml = $CsprojText }
+    # raw.githubusercontent.com often serves UTF-8 with BOM. When decoded into a string,
+    # the BOM becomes a literal U+FEFF char that can break [xml] casting in Windows PowerShell.
+    $clean = $CsprojText.TrimStart([char[]]@(0xFEFF, 0x200B))  # FEFF=BOM/ZWNBSP, 200B=ZWSP (defensive)
+    $clean = $clean.Trim()
+
+    try { [xml]$xml = $clean }
     catch { throw "Failed to parse csproj as XML: $($_.Exception.Message)" }
 
     # First <Version> under any <PropertyGroup>
@@ -48,10 +53,9 @@ function Get-LatestVersionFromRepo {
         return (Get-VersionFromCsprojText -CsprojText $text)
     }
     catch {
+        Write-Error $_
         throw "Could not read a version from '$VersionFilePath'"
     }
-
-
 }
 
 function global:au_GetLatest {
@@ -68,7 +72,7 @@ function global:au_GetLatest {
 
 function global:au_SearchReplace {
     @{
-        "tools\chocolateyInstall.ps1" = @{
+        "tools\chocolateyinstall.ps1" = @{
             "(^[$]url\s*=\s*)('.*')"          = "`$1'$($Latest.URL32)'"           #1
             "(?i)(^\s*checksum\s*=\s*)'.*'"   = "`$1'$($Latest.Checksum32)'"      #2
             "(^[$]url64\s*=\s*)('.*')"        = "`$1'$($Latest.URL64)'"           #1
@@ -76,6 +80,5 @@ function global:au_SearchReplace {
         }
     }
 }
-
 
 Update-Package
